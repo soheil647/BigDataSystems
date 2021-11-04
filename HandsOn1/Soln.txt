@@ -1,0 +1,44 @@
+Available tables in the database:
+cars
+countries
+
+Running Q0: Show all the Models from the cars table 
+LogicalProject(Model=[$0])
+  LogicalTableScan(table=[[world, cars]])
+
+
+Running Q1: Show the details (model, MPG, and country of origin) of the top 5 most fuel efficient cars.
+LogicalProject(Model=[$0], MPG=[$1], Origin=[$8])
+  LogicalSort(sort0=[$1], dir0=[DESC], fetch=[5])
+    LogicalTableScan(table=[[world, cars]])
+
+mazda glc 46.6 Japan
+honda civic 1500 gl 44.6 Japan
+vw rabbit c (diesel) 44.3 Germany
+vw pickup 44.0 Germany
+vw dasher (diesel) 43.4 Germany
+
+Running Q2: For each country of origin, show the average fuel economy (MPG) of the cars, where the average fuel economy is greater than 25 
+LogicalFilter(condition=[>($1, 25)])
+  LogicalAggregate(group=[{8}], C=[AVG($1)])
+    LogicalTableScan(table=[[world, cars]])
+
+Japan 30.45063
+Italy 28.9125
+France 26.083334
+Germany 29.207895
+
+Running Q3: For each country, show the name of the country, currency, and the number of cars originated in that country.
+LogicalProject(Country=[$0], Currency=[$3], TotalCars=[$5])
+  LogicalFilter(condition=[=($0, $4)])
+    LogicalJoin(condition=[true], joinType=[inner])
+      LogicalTableScan(table=[[world, countries]])
+      LogicalAggregate(group=[{8}], TotalCars=[COUNT()])
+        LogicalTableScan(table=[[world, cars]])
+
+Sweden Krone 10 => 1
+United States Dollar 246 => 2
+Japan Yen 79 => 3
+Italy Euro 8 => 4
+France Euro 12 => 5
+Germany Euro 38 => 6

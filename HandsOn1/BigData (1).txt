@@ -1,0 +1,142 @@
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+Available tables in the database:
+CCATEGORY
+CERTIFICATE
+COURSE
+---------------------------------------------------------------------------------------
+Running: select * from COURSE
+LogicalTableScan(table=[[company, COURSE]])
+
+1 Java
+5 English
+4 Big Data
+2 C
+6 Investment
+3 Data Science
+7 Public Speaking
+9 Macro Economics
+10 Linear Algebra
+8 Algorithms
+---------------------------------------------------------------------------------------
+
+Running example1: Show the title of the course where courseid = 2
+LogicalProject(TITLE=[$1])
+  LogicalFilter(condition=[=($0, 2)])
+    LogicalTableScan(table=[[company, COURSE]])
+
+C
+Running example2: Show the details of the courses where courseid > 2
+
+---------------------------------------------------------------------------------------
+LogicalProject(COURSEID=[$0], TITLE=[$1])
+  LogicalFilter(condition=[>($0, 2)])
+    LogicalTableScan(table=[[company, COURSE]])
+
+5 English
+4 Big Data
+6 Investment
+3 Data Science
+7 Public Speaking
+9 Macro Economics
+10 Linear Algebra
+8 Algorithms
+---------------------------------------------------------------------------------------
+
+Running example3: Select * from COURSE order by COURSEID limit 5
+LogicalProject(COURSEID=[$0], TITLE=[$1])
+  LogicalSort(sort0=[$0], dir0=[ASC], fetch=[5])
+    LogicalTableScan(table=[[company, COURSE]])
+
+1 Java
+2 C
+3 Data Science
+4 Big Data
+5 English
+---------------------------------------------------------------------------------------
+
+Running example4: Show the number of courses in each course category where number of courses is greater than 1LogicalFilter(condition=[>($1, 1)])
+  LogicalAggregate(group=[{2}], C=[COUNT($0)])
+    LogicalTableScan(table=[[company, COURSE]])
+
+
+1 5
+2 2
+3 2
+---------------------------------------------------------------------------------------
+
+Running example5: Show all categories from COURSE and CCATEGORY
+LogicalProject(CATID=[$0])
+  LogicalTableScan(table=[[company, CCATEGORY]])
+
+1
+2
+3
+4
+---------------------------------------------------------------------------------------
+
+Running example6: SELECT * FROM COURSE, CCATEGORY
+LogicalJoin(condition=[true], joinType=[inner])
+  LogicalTableScan(table=[[company, COURSE]])
+  LogicalTableScan(table=[[company, CCATEGORY]])
+
+1 Java 1 1 computer science
+1 Java 1 2 communication
+1 Java 1 3 finance
+1 Java 1 4 math
+5 English 2 1 computer science
+5 English 2 2 communication
+5 English 2 3 finance
+5 English 2 4 math
+4 Big Data 1 1 computer science
+4 Big Data 1 2 communication
+4 Big Data 1 3 finance
+4 Big Data 1 4 math
+2 C 1 1 computer science
+2 C 1 2 communication
+2 C 1 3 finance
+2 C 1 4 math
+6 Investment 3 1 computer science
+6 Investment 3 2 communication
+6 Investment 3 3 finance
+6 Investment 3 4 math
+3 Data Science 1 1 computer science
+3 Data Science 1 2 communication
+3 Data Science 1 3 finance
+3 Data Science 1 4 math
+7 Public Speaking 2 1 computer science
+7 Public Speaking 2 2 communication
+7 Public Speaking 2 3 finance
+7 Public Speaking 2 4 math
+9 Macro Economics 3 1 computer science
+9 Macro Economics 3 2 communication
+9 Macro Economics 3 3 finance
+9 Macro Economics 3 4 math
+10 Linear Algebra 4 1 computer science
+10 Linear Algebra 4 2 communication
+10 Linear Algebra 4 3 finance
+10 Linear Algebra 4 4 math
+8 Algorithms 1 1 computer science
+8 Algorithms 1 2 communication
+8 Algorithms 1 3 finance
+8 Algorithms 1 4 math
+---------------------------------------------------------------------------------------
+
+Running example7: Show the title of each course along with the name of the course category
+LogicalProject(TITLE=[$1], CATNAME=[$4])
+  LogicalFilter(condition=[=($2, $3)])
+    LogicalJoin(condition=[true], joinType=[inner])
+      LogicalTableScan(table=[[company, COURSE]])
+      LogicalTableScan(table=[[company, CCATEGORY]])
+
+Java -> computer science
+Big Data -> computer science
+C -> computer science
+Data Science -> computer science
+Algorithms -> computer science
+English -> communication
+Public Speaking -> communication
+Investment -> finance
+Macro Economics -> finance
+Linear Algebra -> math
